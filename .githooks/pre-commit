@@ -1,0 +1,11 @@
+#!/bin/sh
+#
+# Script for running the following inspections
+#
+
+# linter to python files
+files_py=$(git diff --cached --name-only --diff-filter=ACM -- '*.py' | tr '\n' ' ');
+
+if [ "$files_py" != "" ]; then
+    docker compose exec -T app ruff check $files_py || exit 1;
+fi

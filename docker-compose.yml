@@ -1,5 +1,5 @@
 services:
-  fastapi-app:
+  app:
     container_name: app_container
     build: .
     ports:
