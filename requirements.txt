@@ -1,0 +1,12 @@
+python-dotenv
+fastapi[standard]
+uvicorn
+python-jose[cryptography]
+passlib
+bcrypt
+aiomysql
+tortoise-orm[asyncpg]
+aerich
+tomlkit
+
+ruff
