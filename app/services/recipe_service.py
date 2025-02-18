@@ -1,13 +1,9 @@
 from app.models import Recipe
-from app.schemas.recipe_schema import RecipeCreateScheme
+from app.schemas.recipe_schema import RecipeCreateScheme, RecipeFilterSchema
 
 
 class RecipeService:
 
-    @staticmethod
-    async def get_recipes(start_date, end_date):
-        return await Recipe.filter(schedule_at__range=(start_date, end_date)).all()
-    
     @staticmethod
     async def get_recipe(id):
         return await Recipe.filter(id=id).first()
@@ -56,4 +52,24 @@ class RecipeService:
         await recipe.delete()
         return True
 
+    @staticmethod
+    async def filter_recipes(filters: RecipeFilterSchema):
+        if filters is None:
+            recipes = await Recipe.all()
+            return recipes
 
+        query = Recipe.all()
+
+        if filters.title:
+            query = query.filter(title__icontains=filters.title)
+        if filters.duration:
+            query = query.filter(duration=filters.duration)
+        if filters.schedule_at:
+            query = query.filter(schedule_at=filters.schedule_at)
+        if filters.start_date and filters.end_date:
+            query = query.filter(
+                schedule_at__gte=filters.start_date,
+                schedule_at__lte=filters.end_date
+            )
+
+        return await query
