@@ -1,5 +1,6 @@
-from tortoise.models import Model
 from tortoise import fields
+from tortoise.models import Model
+
 
 class Recipe(Model):
     id = fields.IntField(primary_key=True)
@@ -9,11 +10,13 @@ class Recipe(Model):
     duration = fields.TextField()
     schedule_at = fields.DateField()
 
+
 class User(Model):
     id = fields.IntField(primary_key=True)
     username = fields.CharField(max_length=255, unique=True)
     email = fields.CharField(max_length=255, null=True)
     full_name = fields.CharField(max_length=255, null=True)
+
 
 class Hash(Model):
     id = fields.IntField(primary_key=True)

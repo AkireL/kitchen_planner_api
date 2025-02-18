@@ -1,8 +1,9 @@
 import os
+
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from tortoise.contrib.fastapi import register_tortoise
-import os
-from dotenv import load_dotenv
+
 load_dotenv()
 
 DATABASE_URL = f"mysql://{os.getenv('MYSQL_USER')}:{os.getenv('MYSQL_PASSWORD')}@db:3306/{os.getenv('MYSQL_DATABASE')}"
@@ -16,6 +17,7 @@ TORTOISE_ORM = {
         },
     },
 }
+
 
 def init_db(app: FastAPI) -> None:
     register_tortoise(
