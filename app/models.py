@@ -6,8 +6,8 @@ class Recipe(Model):
     id = fields.IntField(primary_key=True)
     title = fields.TextField()
     ingredients = fields.JSONField(default=[])
-    preparation = fields.TextField()
-    duration = fields.TextField()
+    preparation = fields.TextField(null=True)
+    duration = fields.TextField(null=True)
     schedule_at = fields.DateField()
 
 
