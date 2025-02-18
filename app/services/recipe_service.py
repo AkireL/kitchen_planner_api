@@ -14,13 +14,14 @@ class RecipeService:
     
     @staticmethod
     async def create_recipe(data: RecipeCreateScheme):
-        recipe = Recipe(
-            title=data.title,
-            ingredients=data.ingredients,
-            preparation=data.preparation,
-            duration=data.duration,
-            schedule_at=data.schedule_at
-        )
+        recipe = Recipe(title=data.title, schedule_at=data.schedule_at)
+        
+        if data.ingredients:
+            recipe.ingredients = data.ingredients
+        if data.preparation:
+            recipe.preparation = data.preparation
+        if data.duration:
+            recipe.duration = data.duration
         
         await recipe.save()
         return recipe
@@ -42,16 +43,17 @@ class RecipeService:
         if data.schedule_at:
             recipe.schedule_at = data.schedule_at
         
-        recipe.save()
+        await recipe.save()
         return recipe
     
     @staticmethod
     async def delete_recipe(id):
-        recipe = Recipe.filter(id = id).first()
+        recipe = await Recipe.filter(id=id).first()
 
         if not recipe:
             return False
-        recipe.delete()
-
+        
+        await recipe.delete()
         return True
+
 

@@ -41,9 +41,9 @@ async def update_recipe(id, data: RecipeCreateScheme):
 
 
 @recipe_router.delete('/{id}')
-def delete_recipe(id):
-    deleted = RecipeService.delete_recipe(id)
+async def delete_recipe(id):
+    deleted = await RecipeService.delete_recipe(id)
 
-    if not deleted:
-        raise HTTPException(status_code=404, detail="Recipe not found")
-    return JSONResponse(content={"message": "Recipe deleted successfully"}, status_code=200)
+    if deleted:
+        return JSONResponse(content={"message": "Recipe deleted successfully"}, status_code=200)
+    raise HTTPException(status_code=404, detail="Recipe not found")
