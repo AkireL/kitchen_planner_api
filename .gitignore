@@ -2,3 +2,5 @@ app/routers/__pycache__/*
 __pycache__/*
 app/__pycache__/*
 .env
+app/services/__pycache__/*.pyc
+app/schemas/__pycache__/*.pyc
