@@ -1,4 +1,3 @@
-import os
 from datetime import datetime, timedelta
 
 from fastapi import APIRouter, Depends
@@ -7,13 +6,10 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
+from app.config.auth import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
 from app.models import Hash, User
 
 auth_router = APIRouter()
-
-SECRET_KEY = os.getenv('SECRET_KEY')
-ALGORITHM = os.getenv('ALGORITHM')
-ACCESS_TOKEN_EXPIRE_MINUTES = (int)(os.getenv('ACCESS_TOKEN_EXPIRE_MINUTES', 20))
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -80,5 +76,3 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 @auth_router.get("/users/me")
 async def read_users_me(current_user: dict = Depends(get_current_user)):
     return current_user
-
-

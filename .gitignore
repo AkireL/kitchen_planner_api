@@ -4,3 +4,4 @@ app/__pycache__/*
 .env
 app/services/__pycache__/*.pyc
 app/schemas/__pycache__/*.pyc
+app/config/__pycache__/*.pyc
