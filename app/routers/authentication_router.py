@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
@@ -37,13 +37,15 @@ async def authenticate_user(username: str, password: str):
         return None
     return user
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
+async def get_current_user(request: Request,token: str = Depends(oauth2_scheme)):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
         if username is None:
             return JSONResponse(status_code=401, content="Token inválido")
-        return await get_user(username)
+        user = await get_user(username)
+        request.state.user = user
+        return user
     except JWTError:
         return JSONResponse(status_code=401, content="Token inválido o expirado")
 
