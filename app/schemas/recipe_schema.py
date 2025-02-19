@@ -1,5 +1,6 @@
 from datetime import date
 
+from fastapi import Query
 from pydantic import BaseModel, Field
 
 
@@ -12,8 +13,8 @@ class RecipeCreateScheme(BaseModel):
 
 
 class RecipeFilterSchema(BaseModel):
-    title: str | None = Field(min_length=1, max_length=255)
-    duration: str | None = Field(min_length=1, max_length=255)
-    schedule_at: date | None = None
-    start_date: date | None = None
-    end_date: date | None = None
+    title: str | None = Query(None, description="Filter by title")
+    duration: str | None = Query(None, description="Filter by duration")
+    schedule_at: date | None = Query(None, description="Filter by schedule_at")
+    start_date: date | None = Query(None, description="Filter by start_date")
+    end_date: date | None = Query(None, description="Filter by end date")

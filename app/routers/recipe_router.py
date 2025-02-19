@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Body, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse
 
 from app.schemas.recipe_schema import RecipeCreateScheme, RecipeFilterSchema
@@ -7,20 +7,41 @@ from app.services.recipe_service import RecipeService
 recipe_router = APIRouter(prefix="/recipes")
 
 @recipe_router.get('/')
-async def filter_recipes(filters: RecipeFilterSchema=Body(default=None)):
-    recipes = await RecipeService.filter_recipes(filters)
+async def filter_recipes(
+    filters: RecipeFilterSchema=Depends(),
+    page: int = Query(1, ge=1, description="Number page"),
+    per_page: int = Query(10, ge=1, le=100, description="Items per page"),
+):
+    offset = (page - 1) * per_page
+
+    recipes = await RecipeService.filter_recipes(
+        filters,
+        offset,
+        per_page
+    )
+    total_recipes = await RecipeService.get_count_recipes_to_filter(filters)
+    
+    total_pages = (total_recipes + per_page - 1) // per_page
 
     if not recipes:
         raise HTTPException(status_code=404, detail="No found recipes")
 
-    return [{
-        "id": recipe.id,
-        "title": recipe.title,
-        "ingredients": recipe.ingredients,
-        "preparation": recipe.preparation,
-        "duration": recipe.duration,
-        "schedule_at": recipe.schedule_at.isoformat(),
-    } for recipe in recipes]
+    return {
+        "data": [{
+            "id": recipe.id,
+            "title": recipe.title,
+            "ingredients": recipe.ingredients,
+            "preparation": recipe.preparation,
+            "duration": recipe.duration,
+            "schedule_at": recipe.schedule_at.isoformat(),
+        } for recipe in recipes],
+        "meta": {
+            "page": page,
+            "per_page": per_page,
+            "total": total_recipes,
+            "total_pages": total_pages,
+        }
+    }
 
     
 @recipe_router.post('/')

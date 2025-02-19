@@ -53,10 +53,30 @@ class RecipeService:
         return True
 
     @staticmethod
-    async def filter_recipes(filters: RecipeFilterSchema):
+    async def filter_recipes(filters: RecipeFilterSchema, offset: int, per_page: int):
         if filters is None:
-            recipes = await Recipe.all()
-            return recipes
+            queryset = Recipe.all()
+            return await queryset.limit(per_page).offset(offset)
+
+        query = Recipe.all()
+
+        if filters.title:
+            query = query.filter(title__icontains=filters.title)
+        if filters.duration:
+            query = query.filter(duration=filters.duration)
+        if filters.schedule_at:
+            query = query.filter(schedule_at=filters.schedule_at)
+        if filters.start_date and filters.end_date:
+            query = query.filter(schedule_at__range=(filters.start_date, filters.end_date))
+
+        query = query.offset(offset).limit(per_page)
+        return await query
+
+    @staticmethod
+    async def get_count_recipes_to_filter(filters: RecipeFilterSchema):
+        if filters is None:
+            query = Recipe.all().count()
+            return await query
 
         query = Recipe.all()
 
@@ -71,5 +91,6 @@ class RecipeService:
                 schedule_at__gte=filters.start_date,
                 schedule_at__lte=filters.end_date
             )
+        query = query.count()
 
         return await query
