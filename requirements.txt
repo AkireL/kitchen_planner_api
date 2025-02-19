@@ -8,5 +8,6 @@ aiomysql
 tortoise-orm[asyncpg]
 aerich
 tomlkit
+slowapi
 
 ruff
