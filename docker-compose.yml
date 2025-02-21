@@ -6,7 +6,7 @@ services:
       - "8000:8000"
     command: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
     volumes:
-      - .:/app
+      - ./:/app/:delegated
     environment:
       - ENV=production
     depends_on:
