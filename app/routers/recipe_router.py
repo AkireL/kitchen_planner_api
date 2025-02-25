@@ -4,15 +4,15 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse
 
 from app.models import User
-from app.routers.authentication_router import get_current_user
 from app.schemas.recipe_schema import RecipeCreateScheme, RecipeFilterSchema
+from app.services.auth_service import AuthService
 from app.services.recipe_service import RecipeService
 
-recipe_router = APIRouter(prefix="/recipes", dependencies=[Depends(get_current_user)])
+recipe_router = APIRouter(prefix="/recipes", dependencies=[Depends(AuthService.get_current_user)])
 
 @recipe_router.get('/')
 async def filter_recipes(
-    user: Annotated[User, Depends(get_current_user)],
+    user: Annotated[User, Depends(AuthService.get_current_user)],
     filters: RecipeFilterSchema=Depends(),
     page: int = Query(1, ge=1, description="Number page"),
     per_page: int = Query(10, ge=1, le=100, description="Items per page"),
