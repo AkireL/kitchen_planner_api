@@ -5,7 +5,7 @@ python-jose[cryptography]
 passlib
 bcrypt
 aiomysql
-tortoise-orm[asyncpg]
+tortoise-orm[aiomysql]
 aerich
 tomlkit
 slowapi
