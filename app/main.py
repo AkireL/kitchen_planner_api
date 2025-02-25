@@ -20,6 +20,7 @@ def create_application() -> FastAPI:
 
 app = create_application()
 config_rate_limit(app)
+init_db(app)
 
 app.add_middleware(
     CORSMiddleware,
@@ -32,8 +33,6 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_event():
     print("Starting up...")
-    init_db(app)
-    print("Database initialized successfully.")
 
     app.include_router(auth_router)
     app.include_router(recipe_router)
