@@ -9,7 +9,9 @@ load_dotenv()
 DATABASE_URL = f"mysql://{os.getenv('MYSQL_USER')}:{os.getenv('MYSQL_PASSWORD')}@db:3306/{os.getenv('MYSQL_DATABASE')}"
 
 TORTOISE_ORM = {
-    "connections": {"default": DATABASE_URL},
+    "connections": {
+        "default": DATABASE_URL
+    },
     "apps": {
         "models": {
             "models": ["app.models", "aerich.models"],
