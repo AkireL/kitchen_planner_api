@@ -29,11 +29,11 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-async def get_user(username: str):
+async def get_user_by_username(username: str):
     return await User.filter(username=username).first()
 
 async def authenticate_user(username: str, password: str):
-    user = await get_user(username)
+    user = await get_user_by_username(username)
     hash = await Hash.filter(user=user).first()
     if not user or not verify_password(password, hash.hashed_password):
         return None
@@ -48,7 +48,7 @@ async def get_current_user(request: Request, token: str = Depends(oauth2_scheme)
                 status_code=status.HTTP_404,
                 detail="Not exists"
             )
-        user = await get_user(username)
+        user = await get_user_by_username(username)
         request.state.user = user
         return user
     except JWTError  as err:
