@@ -1,6 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse
 
+from app.models import User
 from app.routers.authentication_router import get_current_user
 from app.schemas.recipe_schema import RecipeCreateScheme, RecipeFilterSchema
 from app.services.recipe_service import RecipeService
@@ -9,13 +12,13 @@ recipe_router = APIRouter(prefix="/recipes", dependencies=[Depends(get_current_u
 
 @recipe_router.get('/')
 async def filter_recipes(
-    request: Request,
+    user: Annotated[User, Depends(get_current_user)],
     filters: RecipeFilterSchema=Depends(),
     page: int = Query(1, ge=1, description="Number page"),
     per_page: int = Query(10, ge=1, le=100, description="Items per page"),
 ):
-    # current_user = request.state.user.id
-    
+    print(user)
+
     offset = (page - 1) * per_page
 
     recipes = await RecipeService.filter_recipes(
