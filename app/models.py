@@ -17,7 +17,6 @@ class User(Model):
     email = fields.CharField(max_length=255, null=True)
     full_name = fields.CharField(max_length=255, null=True)
 
-
 class Hash(Model):
     id = fields.IntField(primary_key=True)
     user = fields.ForeignKeyField("models.User", related_name="hash", on_delete=fields.CASCADE)
