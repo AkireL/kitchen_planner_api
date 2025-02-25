@@ -9,6 +9,7 @@ from passlib.context import CryptContext
 
 from app.config.auth import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
 from app.models import Hash, User
+from app.schemas.user_login_scheme import UserLoginScheme
 
 auth_router = APIRouter()
 
@@ -57,14 +58,21 @@ async def get_current_user(request: Request, token: str = Depends(oauth2_scheme)
         ) from err
 
 @auth_router.post("/register")
-async def register(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
-    user = await User.filter(username= form_data.username).first()
+async def register(form_data: Annotated[UserLoginScheme, Depends()]):
+    user = await User.filter(
+        username= form_data.username,
+        email=form_data.email
+    ).first()
 
     if  user is not None:
         return JSONResponse(status_code=400, content="Already registered user")
     
     hashed_password = get_password_hash(form_data.password)
-    user = await User.create(username=form_data.username, email=form_data.username)
+    user = await User.create(
+        username=form_data.username,
+        email=form_data.email,
+        full_name=form_data.full_name,
+    )
     await Hash.create(user=user, hashed_password=hashed_password)
     return {"message": "Successfully registered user"}
 
