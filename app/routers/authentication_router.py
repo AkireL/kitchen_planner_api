@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
+from typing import Annotated
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
@@ -37,36 +38,42 @@ async def authenticate_user(username: str, password: str):
         return None
     return user
 
-async def get_current_user(request: Request,token: str = Depends(oauth2_scheme)):
+async def get_current_user(request: Request, token: str = Depends(oauth2_scheme)):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
         if username is None:
-            return JSONResponse(status_code=401, content="Token inválido")
+            raise HTTPException(
+                status_code=status.HTTP_404,
+                detail="Not exists"
+            )
         user = await get_user(username)
         request.state.user = user
         return user
-    except JWTError:
-        return JSONResponse(status_code=401, content="Token inválido o expirado")
+    except JWTError  as err:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials"
+        ) from err
 
 @auth_router.post("/register")
-async def register(username: str, password: str):
-    user = await User.filter(username= username).first()
+async def register(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
+    user = await User.filter(username= form_data.username).first()
 
     if  user is not None:
-        return JSONResponse(status_code=400, content="Usuario ya registrado")
+        return JSONResponse(status_code=400, content="Already registered user")
     
-    hashed_password = get_password_hash(password)
-    user = await User.create(username=username, email=username)
+    hashed_password = get_password_hash(form_data.password)
+    user = await User.create(username=form_data.username, email=form_data.username)
     await Hash.create(user=user, hashed_password=hashed_password)
-    return {"message": "Usuario registrado exitosamente"}
+    return {"message": "Successfully registered user"}
 
 @auth_router.post("/token")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     user = await authenticate_user(form_data.username, form_data.password)
 
     if not user:
-        return JSONResponse(status_code=401, content="Credenciales incorrectas")
+        return JSONResponse(status_code=401, content="Incorrect credentials")
     
     access_token = create_access_token(
         {"sub": user.username},
