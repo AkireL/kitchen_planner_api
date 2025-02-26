@@ -2,11 +2,9 @@ import re
 
 from fastapi import HTTPException
 from pydantic import BaseModel, EmailStr, Field, validator
+    
 
-
-class UserLoginScheme(BaseModel):
-    full_name: str = Field(max_length=255)
-    email: EmailStr
+class LogInScheme(BaseModel):
     password: str = Field(min_length=8)
     username: str = Field(min_length=8)
 
@@ -25,3 +23,9 @@ class UserLoginScheme(BaseModel):
                 status_code=422,
                 detail="Password must contain at least one number.")
         return v
+
+class RegisterUserScheme(LogInScheme):
+    full_name: str = Field(max_length=255)
+    email: EmailStr
+    
+
