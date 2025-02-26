@@ -1,5 +1,5 @@
 from app.models import Hash, User
-from app.schemas.user_login_scheme import UserLoginScheme
+from app.schemas.user_login_scheme import RegisterUserScheme
 
 
 class UserService:
@@ -9,7 +9,7 @@ class UserService:
         return await User.filter(username=username).first()
 
     @staticmethod
-    async def create(form_data: UserLoginScheme):
+    async def create(form_data: RegisterUserScheme):
         user = await User.create(
             username=form_data.username,
             email=form_data.email,
