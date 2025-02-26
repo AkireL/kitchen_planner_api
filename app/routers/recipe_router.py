@@ -10,7 +10,7 @@ from app.services.recipe_service import RecipeService
 
 recipe_router = APIRouter(prefix="/recipes", dependencies=[Depends(AuthService.get_current_user)])
 
-@recipe_router.get('/')
+@recipe_router.get('')
 async def filter_recipes(
     user: Annotated[User, Depends(AuthService.get_current_user)],
     filters: RecipeFilterSchema=Depends(),
@@ -52,7 +52,7 @@ async def filter_recipes(
     }
 
     
-@recipe_router.post('/')
+@recipe_router.post('')
 async def create_recipe(
     user: Annotated[User, Depends(AuthService.get_current_user)],
     data: RecipeCreateScheme):
