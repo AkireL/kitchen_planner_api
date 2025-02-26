@@ -9,8 +9,12 @@ class RecipeService:
         return await Recipe.filter(id=id).first()
     
     @staticmethod
-    async def create_recipe(data: RecipeCreateScheme):
-        recipe = Recipe(title=data.title, schedule_at=data.schedule_at)
+    async def create_recipe(user_id: str, data: RecipeCreateScheme):
+        recipe = Recipe(
+            title=data.title,
+            schedule_at=data.schedule_at,
+            user_id = user_id
+        )
         
         if data.ingredients:
             recipe.ingredients = data.ingredients
@@ -53,25 +57,26 @@ class RecipeService:
         return True
 
     @staticmethod
-    async def filter_recipes(filters: RecipeFilterSchema, offset: int, per_page: int):
-        query = RecipeService.scope_filter(filters)
+    async def filter_recipes(user_id: str, filters: RecipeFilterSchema, offset: int, per_page: int):
+        query = RecipeService.scope_filter(user_id, filters)
         query = query.limit(per_page).offset(offset)
         return await query
 
     @staticmethod
-    async def get_count_recipes_to_filter(filters: RecipeFilterSchema):
-        query = RecipeService.scope_filter(filters)
+    async def get_count_recipes_to_filter(user_id, filters: RecipeFilterSchema):
+        query = RecipeService.scope_filter(user_id, filters)
         query = query.count()
 
         return await query
 
 
     @staticmethod
-    def scope_filter(filters: RecipeFilterSchema):
+    def scope_filter(user_id: str, filters: RecipeFilterSchema):
         if filters is None:
             return Recipe.all().count()
 
         query = Recipe.all()
+        query = query.filter(user_id=user_id)
 
         if filters.title:
             query = query.filter(title__icontains=filters.title)

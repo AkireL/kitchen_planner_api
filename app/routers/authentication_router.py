@@ -2,12 +2,12 @@ from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 
 from app.config.auth import ACCESS_TOKEN_EXPIRE_MINUTES
 from app.models import Hash, User
-from app.schemas.user_login_scheme import LogInScheme, RegisterUserScheme
+from app.schemas.user_login_scheme import RegisterUserScheme
 from app.services.auth_service import AuthService
 from app.services.user_service import UserService
 
@@ -41,7 +41,7 @@ async def register(form_data: RegisterUserScheme):
     }
 
 @auth_router.post("/token")
-async def login(form_data: LogInScheme):
+async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     user = await UserService.get_user_by_username(form_data.username)
     hash = await Hash.filter(user=user).first()
 
