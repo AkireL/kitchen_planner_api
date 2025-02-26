@@ -1,14 +1,13 @@
 from datetime import timedelta
-from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 
 from app.config.auth import ACCESS_TOKEN_EXPIRE_MINUTES
 from app.models import Hash, User
-from app.schemas.user_login_scheme import UserLoginScheme
+from app.schemas.user_login_scheme import LogInScheme, RegisterUserScheme
 from app.services.auth_service import AuthService
 from app.services.user_service import UserService
 
@@ -19,7 +18,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 @auth_router.post("/register")
-async def register(form_data: Annotated[UserLoginScheme, Depends()]):
+async def register(form_data: RegisterUserScheme):
     user = await User.filter(
         username= form_data.username,
         email=form_data.email
@@ -33,10 +32,16 @@ async def register(form_data: Annotated[UserLoginScheme, Depends()]):
 
     await UserService.saveHash(user, hashed_password)
 
-    return {"message": "Successfully registered user"}
+    return {
+        "message": "Successfully registered user", 
+        "data": {
+            "jwt": hashed_password,
+            "user": user,
+        }
+    }
 
 @auth_router.post("/token")
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+async def login(form_data: LogInScheme):
     user = await UserService.get_user_by_username(form_data.username)
     hash = await Hash.filter(user=user).first()
 
