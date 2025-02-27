@@ -15,7 +15,16 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 def create_application() -> FastAPI:
-    application = FastAPI()
+    application = FastAPI(
+        title="Recipes API",
+        description="Documentation",
+        version="1.0.0",
+        contact={
+        "name": "Erika Basurto",
+        "url": "https://www.linkedin.com/in/erika-basurto/",
+        "email": "iamdleonor@gmail.com",
+    },
+    )
     return application
 
 app = create_application()
