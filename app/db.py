@@ -6,7 +6,7 @@ from tortoise.contrib.fastapi import register_tortoise
 
 load_dotenv()
 
-DATABASE_URL = f"mysql://{os.getenv('MYSQL_USER')}:{os.getenv('MYSQL_PASSWORD')}@db:3306/{os.getenv('MYSQL_DATABASE')}"
+DATABASE_URL = f"mysql://{os.getenv('MYSQL_USER')}:{os.getenv('MYSQL_PASSWORD')}@{os.getenv('MYSQL_HOST')}:{os.getenv('MYSQL_PORT')}/{os.getenv('MYSQL_DATABASE')}"
 
 TORTOISE_ORM = {
     "connections": {
