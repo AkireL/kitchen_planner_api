@@ -9,5 +9,6 @@ tortoise-orm[aiomysql]
 aerich
 tomlkit
 slowapi
+mangum
 
 ruff
