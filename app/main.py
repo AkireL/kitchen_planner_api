@@ -1,4 +1,3 @@
-from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
@@ -8,8 +7,6 @@ from app.db import init_db
 from app.rate_limit import config_rate_limit
 from app.routers.authentication_router import auth_router
 from app.routers.recipe_router import recipe_router
-
-load_dotenv()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
