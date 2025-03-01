@@ -1,15 +1,15 @@
+import sentry_sdk
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 
-from app.config.app import ORIGINS
+from app.config.app import ORIGINS, SENTRY_DSN
 from app.db import init_db
 from app.rate_limit import config_rate_limit
 from app.routers.authentication_router import auth_router
 from app.routers.recipe_router import recipe_router
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
 
 def create_application() -> FastAPI:
     application = FastAPI(
@@ -28,6 +28,15 @@ app = create_application()
 config_rate_limit(app)
 init_db(app)
 
+sentry_sdk.init(
+    dsn= SENTRY_DSN,
+    send_default_pii=True,
+    traces_sample_rate=1.0,
+    _experiments={
+        "continuous_profiling_auto_start": True,
+    },
+)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ORIGINS,
@@ -35,6 +44,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 @app.on_event("startup")
 async def startup_event():
