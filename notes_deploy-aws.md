@@ -168,8 +168,15 @@ aws apigatewayv2 create-route \
   --target "integrations/4qj4syp"
 
 
+
+aws apigatewayv2 create-route \
+  --api-id kjtpujf0f8 \
+  --route-key "GET /docs" \
+  --target "integrations/4qj4syp"
+
 6. Desplegar la apigateway
 
 aws apigatewayv2 create-deployment \
   --api-id <API_ID> \
   --stage-name <STAGE_NAME>
+

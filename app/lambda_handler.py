@@ -2,4 +2,4 @@ from mangum import Mangum
 
 from app.main import app
 
-handler = Mangum(app)
+lambda_handler = Mangum(app)
