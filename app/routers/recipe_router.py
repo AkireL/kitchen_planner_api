@@ -32,7 +32,15 @@ async def filter_recipes(
     total_pages = (total_recipes + per_page - 1) // per_page
 
     if not recipes:
-        raise HTTPException(status_code=404, detail="No found recipes")
+        return {
+            "data": [],
+            "meta": {
+                "page": page,
+                "per_page": per_page,
+                "total": total_recipes,
+                "total_pages": total_pages,
+            }
+        }
 
     return {
         "data": [{
