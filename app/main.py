@@ -9,6 +9,15 @@ from app.rate_limit import config_rate_limit
 from app.routers.authentication_router import auth_router
 from app.routers.recipe_router import recipe_router
 
+sentry_sdk.init(
+    dsn= SENTRY_DSN,
+    send_default_pii=True,
+    traces_sample_rate=1.0,
+    _experiments={
+        "continuous_profiling_auto_start": True,
+    },
+)
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 def create_application() -> FastAPI:
@@ -26,16 +35,9 @@ def create_application() -> FastAPI:
 
 app = create_application()
 config_rate_limit(app)
+
 init_db(app)
 
-sentry_sdk.init(
-    dsn= SENTRY_DSN,
-    send_default_pii=True,
-    traces_sample_rate=1.0,
-    _experiments={
-        "continuous_profiling_auto_start": True,
-    },
-)
 
 app.add_middleware(
     CORSMiddleware,
@@ -52,3 +54,10 @@ async def startup_event():
 
     app.include_router(auth_router)
     app.include_router(recipe_router)
+
+
+@recipe_router.get('hi')
+def hello():
+    return {
+        'message': "hi, how are you?"
+    }
