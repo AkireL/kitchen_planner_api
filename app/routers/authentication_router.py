@@ -31,11 +31,17 @@ async def register(form_data: RegisterUserScheme):
     user = await UserService.create(form_data)
 
     await UserService.saveHash(user, hashed_password)
-
+    
+    # TODO remove this when implement verify email
+    access_token = AuthService.create_access_token(
+        {"sub": user.username},
+        timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
+    
     return {
         "message": "Successfully registered user", 
         "data": {
-            "jwt": hashed_password,
+            "jwt": access_token,
             "user": user,
         }
     }
