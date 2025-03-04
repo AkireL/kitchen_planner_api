@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+import sentry_sdk
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -19,32 +20,37 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 @auth_router.post("/register")
 async def register(form_data: RegisterUserScheme):
-    user = await User.filter(
-        username= form_data.username,
-        email=form_data.email
-    ).first()
+    try:
+        user = await User.filter(
+            username= form_data.username,
+            email=form_data.email
+        ).first()
 
-    if  user is not None:
-        return JSONResponse(status_code=400, content="Already registered user")
-    
-    hashed_password = AuthService.get_password_hash(form_data.password)
-    user = await UserService.create(form_data)
+        if  user is not None:
+            return JSONResponse(status_code=400, content="Already registered user")
+        
+        hashed_password = AuthService.get_password_hash(form_data.password)
+        user = await UserService.create(form_data)
 
-    await UserService.saveHash(user, hashed_password)
-    
-    # TODO remove this when implement verify email
-    access_token = AuthService.create_access_token(
-        {"sub": user.username},
-        timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    )
-    
-    return {
-        "message": "Successfully registered user", 
-        "data": {
-            "jwt": access_token,
-            "user": user,
+        await UserService.saveHash(user, hashed_password)
+        
+        # TODO remove this when implement verify email
+        access_token = AuthService.create_access_token(
+            {"sub": user.username},
+            timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        )
+        
+        return {
+            "message": "Successfully registered user", 
+            "data": {
+                "jwt": access_token,
+                "user": user,
+            }
         }
-    }
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
+        raise e
+
 
 @auth_router.post("/token")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
