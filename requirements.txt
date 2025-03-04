@@ -10,5 +10,7 @@ aerich
 tomlkit
 slowapi
 mangum
-sentry-sdk
+sentry-sdk[fastapi]
+
+
 ruff
