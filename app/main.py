@@ -1,4 +1,6 @@
 import sentry_sdk
+from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
+from sentry_sdk.integrations.fastapi import FastApiIntegration
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
@@ -17,6 +19,7 @@ sentry_sdk.init(
     _experiments={
         "continuous_profiling_auto_start": True,
     },
+    integrations=[AwsLambdaIntegration(), FastApiIntegration()],
 )
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
