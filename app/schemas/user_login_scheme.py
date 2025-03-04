@@ -25,7 +25,7 @@ class LogInScheme(BaseModel):
         return v
 
 class RegisterUserScheme(LogInScheme):
-    full_name: str = Field(max_length=255)
+    fullname: str = Field(max_length=255)
     email: EmailStr
     
 

@@ -13,7 +13,7 @@ class UserService:
         user = await User.create(
             username=form_data.username,
             email=form_data.email,
-            full_name=form_data.full_name,
+            fullname=form_data.fullname,
         )
         return user
 
