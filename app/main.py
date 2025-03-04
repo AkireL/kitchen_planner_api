@@ -11,7 +11,7 @@ from app.routers.recipe_router import recipe_router
 
 sentry_sdk.init(
     dsn= SENTRY_DSN,
-    send_default_pii=True,
+    send_default_pii=False,
     traces_sample_rate=1.0,
     _experiments={
         "continuous_profiling_auto_start": True,
