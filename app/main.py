@@ -8,6 +8,7 @@ from app.db import init_db
 from app.rate_limit import config_rate_limit
 from app.routers.authentication_router import auth_router
 from app.routers.recipe_router import recipe_router
+from app.routers.user_router import user_router
 
 sentry_sdk.init(
     dsn= SENTRY_DSN,
@@ -54,6 +55,7 @@ async def startup_event():
 
     app.include_router(auth_router)
     app.include_router(recipe_router)
+    app.include_router(user_router)
 
 
 @recipe_router.get('hi')

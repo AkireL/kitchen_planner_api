@@ -5,6 +5,10 @@ from app.schemas.user_login_scheme import RegisterUserScheme
 class UserService:
 
     @staticmethod
+    async def list_user():
+        return await User.filter()
+
+    @staticmethod
     async def get_user_by_username(username: str):
         return await User.filter(username=username).first()
 
