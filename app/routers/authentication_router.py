@@ -4,7 +4,6 @@ import sentry_sdk
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from passlib.context import CryptContext
 
 from app.config.auth import ACCESS_TOKEN_EXPIRE_MINUTES
 from app.models import Hash, User
@@ -13,8 +12,6 @@ from app.services.auth_service import AuthService
 from app.services.user_service import UserService
 
 auth_router = APIRouter()
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 

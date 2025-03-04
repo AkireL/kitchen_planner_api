@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-from passlib.context import CryptContext
+import bcrypt
 
 from app.config.auth import ALGORITHM, SECRET_KEY
 from app.services.user_service import UserService
@@ -14,13 +14,15 @@ class AuthService:
 
     @staticmethod
     def get_password_hash(password):
-        pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-        return pwd_context.hash(password)
+        pwd_bytes = password.encode('utf-8')
+        salt = bcrypt.gensalt()
+        hashed_password = bcrypt.hashpw(password=pwd_bytes, salt=salt)
+        return hashed_password
 
     @staticmethod
     def verify_password(plain_password, hashed_password):
-        pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-        return pwd_context.verify(plain_password, hashed_password)
+        password_byte_enc = plain_password.encode('utf-8')
+        return bcrypt.checkpw(password = password_byte_enc , hashed_password = hashed_password)
 
     @staticmethod
     def create_access_token(data: dict, expires_delta: timedelta = None):
