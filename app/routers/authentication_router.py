@@ -24,7 +24,9 @@ async def register(form_data: RegisterUserScheme):
         ).first()
 
         if  user is not None:
-            return JSONResponse(status_code=400, content="Already registered user")
+            return JSONResponse(status_code=400, content={
+                "message": "Already registered user"
+            })
         
         hashed_password = AuthService.get_password_hash(form_data.password)
         user = await UserService.create(form_data)
@@ -52,13 +54,18 @@ async def register(form_data: RegisterUserScheme):
 @auth_router.post("/token")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     user = await UserService.get_user_by_username(form_data.username)
-    hash = await Hash.filter(user=user).first()
 
     if not user:
-        return JSONResponse(status_code=401, content="Incorrect credentials")
+        return JSONResponse(status_code=401, content={
+            "message": "User no found",
+        })
+
+    hash = await Hash.filter(user=user).first()
 
     if not hash:
-        return JSONResponse(status_code=401, content="Incorrect credentials")
+        return JSONResponse(status_code=401, content={
+            "message": "Incorrect credentials",
+        })
 
     is_user_right = AuthService.verify_password(form_data.password, hash.hashed_password)
     
