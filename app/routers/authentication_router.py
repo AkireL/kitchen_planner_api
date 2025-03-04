@@ -9,6 +9,8 @@ from app.config.auth import ACCESS_TOKEN_EXPIRE_MINUTES
 from app.models import Hash, User
 from app.schemas.user_login_scheme import RegisterUserScheme
 from app.services.auth_service import AuthService
+from app.services.jwt_service import JWTService
+from app.services.password import Password
 from app.services.user_service import UserService
 
 auth_router = APIRouter()
@@ -28,13 +30,13 @@ async def register(form_data: RegisterUserScheme):
                 "message": "Already registered user"
             })
         
-        hashed_password = AuthService.get_password_hash(form_data.password)
+        hashed_password = Password.get_password_hash(form_data.password)
         user = await UserService.create(form_data)
 
         await UserService.saveHash(user, hashed_password)
         
         # TODO remove this when implement verify email
-        access_token = AuthService.create_access_token(
+        access_token = JWTService.create_access_token(
             {"sub": user.username},
             timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
         )
@@ -67,7 +69,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
             "message": "Incorrect credentials",
         })
 
-    is_user_right = AuthService.verify_password(form_data.password, hash.hashed_password)
+    is_user_right = Password.verify_password(form_data.password, hash.hashed_password)
     
     if not is_user_right:
         raise HTTPException(
@@ -75,7 +77,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
             detail="Incorrect credentials."
         )
     
-    access_token = AuthService.create_access_token(
+    access_token = JWTService.create_access_token(
         {"sub": user.username},
         timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     )
