@@ -6,7 +6,7 @@ from pydantic import BaseModel, EmailStr, Field, validator
 
 class LogInScheme(BaseModel):
     password: str = Field(min_length=8)
-    username: str = Field(min_length=8)
+    username: str = Field(min_length=4)
 
     @validator('password')
     def validate_password_strength(cls, v):
