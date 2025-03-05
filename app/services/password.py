@@ -8,7 +8,7 @@ class Password:
         pwd_bytes = password.encode('utf-8')
         salt = bcrypt.gensalt()
         hashed_password = bcrypt.hashpw(password=pwd_bytes, salt=salt)
-        return hashed_password
+        return hashed_password.decode('utf-8')
 
     @staticmethod
     def verify_password(plain_password: str, hashed_password: str):
