@@ -18,3 +18,14 @@ class Recipe(Model):
     duration = fields.TextField(null=True)
     schedule_at = fields.DateField()
     user = fields.ForeignKeyField("models.User", related_name="recipe", on_delete=fields.CASCADE)
+
+class RecipeUser(Model):
+    user = fields.ForeignKeyField("models.User", 
+        related_name="user_recipes",
+        on_delete=fields.CASCADE)
+    recipe = fields.ForeignKeyField('models.Recipe',
+        related_name='recipe_users',
+        on_delete=fields.CASCADE)
+
+    class Meta:
+        table = "recipe_user" 
