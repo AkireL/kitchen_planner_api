@@ -8,7 +8,7 @@ from app.services.user_service import UserService
 
 class AuthService:
     oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-    
+
     @staticmethod
     async def get_current_user(request: Request, token: str = Depends(oauth2_scheme)):
         try:
