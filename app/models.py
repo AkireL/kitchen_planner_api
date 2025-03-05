@@ -7,6 +7,8 @@ class User(Model):
     username = fields.CharField(max_length=255, unique=True)
     email = fields.CharField(max_length=255, null=True)
     fullname = fields.CharField(max_length=255, null=True)
+    hashed_password = fields.CharField(max_length=255)
+
 
 class Recipe(Model):
     id = fields.IntField(primary_key=True)
@@ -16,9 +18,3 @@ class Recipe(Model):
     duration = fields.TextField(null=True)
     schedule_at = fields.DateField()
     user = fields.ForeignKeyField("models.User", related_name="recipe", on_delete=fields.CASCADE)
-
-
-class Hash(Model):
-    id = fields.IntField(primary_key=True)
-    user = fields.ForeignKeyField("models.User", related_name="hash", on_delete=fields.CASCADE)
-    hashed_password = fields.CharField(max_length=255)

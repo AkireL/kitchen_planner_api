@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 from app.config.auth import ACCESS_TOKEN_EXPIRE_MINUTES
-from app.models import Hash, User
+from app.models import User
 from app.schemas.user_login_scheme import RegisterUserScheme
 from app.services.auth_service import AuthService
 from app.services.jwt_service import JWTService
@@ -31,9 +31,7 @@ async def register(form_data: RegisterUserScheme):
             })
         
         hashed_password = Password.get_password_hash(form_data.password)
-        user = await UserService.create(form_data)
-
-        await UserService.saveHash(user, hashed_password)
+        user = await UserService.create(form_data, hashed_password)
         
         # TODO remove this when implement verify email
         access_token = JWTService.create_access_token(
@@ -62,14 +60,15 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
             "message": "User no found",
         })
 
-    hash = await Hash.filter(user=user).first()
-
-    if not hash:
+    if not user.hashed_password:
         return JSONResponse(status_code=401, content={
             "message": "Incorrect credentials",
         })
 
-    is_user_right = Password.verify_password(form_data.password, hash.hashed_password)
+    is_user_right = Password.verify_password(
+        form_data.password,
+        user.hashed_password
+    )
     
     if not is_user_right:
         raise HTTPException(

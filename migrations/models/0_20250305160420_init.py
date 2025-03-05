@@ -7,13 +7,8 @@ async def upgrade(db: BaseDBAsyncClient) -> str:
     `id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `username` VARCHAR(255) NOT NULL UNIQUE,
     `email` VARCHAR(255),
-    `fullname` VARCHAR(255)
-) CHARACTER SET utf8mb4;
-CREATE TABLE IF NOT EXISTS `hash` (
-    `id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `hashed_password` VARCHAR(255) NOT NULL,
-    `user_id` INT NOT NULL,
-    CONSTRAINT `fk_hash_user_63358389` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+    `fullname` VARCHAR(255),
+    `hashed_password` VARCHAR(255) NOT NULL
 ) CHARACTER SET utf8mb4;
 CREATE TABLE IF NOT EXISTS `recipe` (
     `id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
