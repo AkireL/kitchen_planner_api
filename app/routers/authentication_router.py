@@ -29,16 +29,16 @@ async def register(form_data: RegisterUserScheme):
             return JSONResponse(status_code=400, content={
                 "message": "Already registered user"
             })
-        
+
         hashed_password = Password.get_password_hash(form_data.password)
         user = await UserService.create(form_data, hashed_password)
-        
+
         # TODO remove this when implement verify email
         access_token = JWTService.create_access_token(
             {"sub": user.username},
             timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
         )
-        
+
         return {
             "message": "Successfully registered user", 
             "data": {
@@ -69,13 +69,13 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
         form_data.password,
         user.hashed_password
     )
-    
+
     if not is_user_right:
         raise HTTPException(
             status_code=404,
             detail="Incorrect credentials."
         )
-    
+
     access_token = JWTService.create_access_token(
         {"sub": user.username},
         timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)

@@ -28,7 +28,7 @@ async def filter_recipes(
     total_recipes = await RecipeService.get_count_recipes_to_filter(
         user.id,
         filters)
-    
+
     total_pages = (total_recipes + per_page - 1) // per_page
 
     if not recipes:
@@ -59,7 +59,6 @@ async def filter_recipes(
         }
     }
 
-    
 @recipe_router.post('')
 async def create_recipe(
     user: Annotated[User, Depends(AuthService.get_current_user)],

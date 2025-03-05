@@ -2,7 +2,7 @@ import re
 
 from fastapi import HTTPException
 from pydantic import BaseModel, EmailStr, Field, validator
-    
+
 
 class LogInScheme(BaseModel):
     password: str = Field(min_length=8)
@@ -27,5 +27,4 @@ class LogInScheme(BaseModel):
 class RegisterUserScheme(LogInScheme):
     fullname: str = Field(max_length=255)
     email: EmailStr
-    
 
