@@ -56,10 +56,3 @@ async def startup_event():
     app.include_router(auth_router)
     app.include_router(recipe_router)
     app.include_router(user_router)
-
-
-@recipe_router.get('hi')
-def hello():
-    return {
-        'message': "hi, how are you?"
-    }
