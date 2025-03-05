@@ -7,6 +7,11 @@ class UserService:
     @staticmethod
     async def list_user():
         return await User.filter()
+    
+    @staticmethod
+    async def exists_user(id):
+        user = await User.filter(id=id)
+        return bool(user)
 
     @staticmethod
     async def get_user_by_username(username: str):
