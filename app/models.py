@@ -28,4 +28,5 @@ class RecipeUser(Model):
         on_delete=fields.CASCADE)
 
     class Meta:
-        table = "recipe_user" 
+        table = "recipe_user"
+        unique_together = ('user', 'recipe')
