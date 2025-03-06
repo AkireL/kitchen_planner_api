@@ -10,8 +10,8 @@ class UserService:
     
     @staticmethod
     async def exists_user(id):
-        user = await User.filter(id=id)
-        return bool(user)
+        return await User.filter(id=id).first()
+
 
     @staticmethod
     async def get_user_by_username(username: str):

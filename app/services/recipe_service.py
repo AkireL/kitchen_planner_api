@@ -57,9 +57,17 @@ class RecipeService:
         return True
 
     @staticmethod
-    async def filter_recipes(user_id: str, filters: RecipeFilterSchema, offset: int, per_page: int):
+    async def filter_recipes(
+        user_id: str,
+        filters: RecipeFilterSchema,
+        offset: int=0,
+        per_page: int=0
+    ):
         query = RecipeService.scope_filter(user_id, filters)
-        query = query.limit(per_page).offset(offset)
+        
+        if per_page > 0 and offset > 0:
+            query = query.limit(per_page).offset(offset)
+        
         return await query
 
     @staticmethod
