@@ -30,12 +30,12 @@ async def filter_recipes(
     total_recipes = await RecipeService.get_count_recipes_to_filter(
         user.id,
         filters
-)
+    )
 
     if not recipes:
-        return RecipeResource.response([], page, per_page, total_recipes)
+        return RecipeResource.collection([], page, per_page, total_recipes)
 
-    return RecipeResource.response(recipes, page, per_page, total_recipes)
+    return RecipeResource.collection(recipes, page, per_page, total_recipes)
 
 @recipe_router.post('')
 async def create_recipe(

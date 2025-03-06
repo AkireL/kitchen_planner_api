@@ -1,6 +1,8 @@
 
 from typing import Any
 
+from fastapi.responses import JSONResponse
+
 from app.models import Recipe
 
 
@@ -17,22 +19,39 @@ class RecipeResource:
         }
 
     @staticmethod
-    def collection(recipes: list) -> list[Recipe]:
-        return [RecipeResource.to_dict(recipe) for recipe in recipes]
-
-    @staticmethod
-    def response(data: list, page: int, per_page: int, total: int) -> dict[str, Any]:
+    def collection(
+        recipes: list,
+        page: int,
+        per_page: int,
+        total: int,
+        status_code: int = 200
+    ) -> JSONResponse:
         total_pages = (total + per_page - 1) // per_page
 
-        if data:
-            data = RecipeResource.collection(data)
+        data = []
 
-        return {
-            "data": data,
-            "meta": {
-                "page": page,
-                "per_page": per_page,
-                "total": total,
-                "total_pages": total_pages,
-            }
-        }
+        if recipes:
+            data = [RecipeResource.to_dict(recipe) for recipe in recipes]
+
+        return JSONResponse(
+            content={
+                "data": data,
+                "meta": {
+                    "page": page,
+                    "per_page": per_page,
+                    "total": total,
+                    "total_pages": total_pages,
+                },
+            },
+            status_code=status_code
+        )
+
+    @staticmethod
+    def response(recipe: Recipe, status_code: int = 200) -> JSONResponse:
+
+        return JSONResponse(
+            content={
+                "data": RecipeResource.to_dict(recipe),
+            },
+            status_code=status_code
+        )
