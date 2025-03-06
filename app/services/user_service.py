@@ -1,15 +1,24 @@
-from app.models import User
+from fastapi import HTTPException
+
+from app.models import RecipeUser, User
+from app.schemas.recipe_schema import RecipeFilterSchema
 from app.schemas.user_login_scheme import RegisterUserScheme
+from app.services.recipe_service import RecipeService
 
 
 class UserService:
+
+    user: User
+
+    def __init__(self, user: User):
+        self.user = user
 
     @staticmethod
     async def list_user():
         return await User.filter()
     
     @staticmethod
-    async def exists_user(id):
+    async def get_user(id):
         return await User.filter(id=id).first()
 
 
@@ -26,3 +35,32 @@ class UserService:
             hashed_password=hash,
         )
         return user
+
+    async def shared_its_recipes(self, user_id: int, start_date, end_date):
+        user_to_share_recipes = await UserService.get_user(user_id)
+
+        if not user_to_share_recipes:
+            raise HTTPException(
+                status_code=404,
+                detail="User does not found.")
+
+        recipes = await RecipeService.filter_recipes(
+            self.user.id, 
+            RecipeFilterSchema(
+                start_date = start_date,
+                end_date = end_date,
+            )
+        )
+
+        if recipes:
+            user_recipes = [
+                RecipeUser(user_id=user_to_share_recipes.id, recipe_id=recipe.id) 
+                for recipe in recipes
+            ]
+
+            try:
+                await RecipeUser.bulk_create(user_recipes)
+            except Exception:
+                return recipes
+
+        return recipes
