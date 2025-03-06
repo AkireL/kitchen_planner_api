@@ -43,14 +43,7 @@ async def create_recipe(
     data: RecipeCreateScheme):
     recipe = await RecipeService.create_recipe(user.id, data)
 
-    return JSONResponse(content={
-        'id': recipe.id,
-        'title': recipe.title,
-        'ingredients': recipe.ingredients,
-        'preparation': recipe.preparation,
-        'duration': recipe.duration,
-        'schedule_at': recipe.schedule_at.isoformat()
-    }, status_code=201)
+    return RecipeResource.response(recipe, status_code=201)
 
 
 @recipe_router.put('/{id}')
@@ -63,14 +56,7 @@ async def update_recipe(id, data: RecipeCreateScheme):
     if not recipe:
         return JSONResponse(content={'error': 'Recipe not found'}, status_code=404)
 
-    return JSONResponse(content={
-        'id': recipe.id,
-        'title': recipe.title,
-        'ingredients': recipe.ingredients,
-        'preparation': recipe.preparation,
-        'duration': recipe.duration,
-        'schedule_at': recipe.schedule_at.isoformat()
-    }, status_code=200)
+    return RecipeResource.response(recipe)
 
 
 @recipe_router.delete('/{id}')
