@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse
 
 from app.models import User
+from app.resources.recipe_resource import RecipeResource
 from app.schemas.recipe_schema import RecipeCreateScheme, RecipeFilterSchema
 from app.services.auth_service import AuthService
 from app.services.recipe_service import RecipeService
@@ -25,39 +26,16 @@ async def filter_recipes(
         offset,
         per_page
     )
+
     total_recipes = await RecipeService.get_count_recipes_to_filter(
         user.id,
-        filters)
-
-    total_pages = (total_recipes + per_page - 1) // per_page
+        filters
+)
 
     if not recipes:
-        return {
-            "data": [],
-            "meta": {
-                "page": page,
-                "per_page": per_page,
-                "total": total_recipes,
-                "total_pages": total_pages,
-            }
-        }
+        return RecipeResource.response([], page, per_page, total_recipes)
 
-    return {
-        "data": [{
-            "id": recipe.id,
-            "title": recipe.title,
-            "ingredients": recipe.ingredients,
-            "preparation": recipe.preparation,
-            "duration": recipe.duration,
-            "schedule_at": recipe.schedule_at.isoformat(),
-        } for recipe in recipes],
-        "meta": {
-            "page": page,
-            "per_page": per_page,
-            "total": total_recipes,
-            "total_pages": total_pages,
-        }
-    }
+    return RecipeResource.response(recipes, page, per_page, total_recipes)
 
 @recipe_router.post('')
 async def create_recipe(
