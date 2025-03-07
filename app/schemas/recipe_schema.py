@@ -18,3 +18,4 @@ class RecipeFilterSchema(BaseModel):
     schedule_at: date | None = Query(None, description="Filter by schedule_at")
     start_date: date | None = Query(None, description="Filter by start_date")
     end_date: date | None = Query(None, description="Filter by end date")
+    with_shared: bool = Query(True, description="Include shared recipes")
