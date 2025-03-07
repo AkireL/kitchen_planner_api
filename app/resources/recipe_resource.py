@@ -16,6 +16,7 @@ class RecipeResource:
             "preparation": recipe.preparation,
             "duration": recipe.duration,
             "schedule_at": recipe.schedule_at.isoformat(),
+            "user_id": recipe.user.id,
         }
 
     @staticmethod
