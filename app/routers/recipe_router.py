@@ -24,7 +24,7 @@ async def filter_recipes(
         user.id,
         filters,
         offset,
-        per_page
+        per_page,
     )
 
     total_recipes = await RecipeService.get_count_recipes_to_filter(
@@ -42,7 +42,7 @@ async def create_recipe(
     user: Annotated[User, Depends(AuthService.get_current_user)],
     data: RecipeCreateScheme):
     recipe = await RecipeService.create_recipe(user.id, data)
-
+    
     return RecipeResource.response(recipe, status_code=201)
 
 
