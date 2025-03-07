@@ -1,3 +1,5 @@
+from tortoise.expressions import Q
+
 from app.models import Recipe
 from app.schemas.recipe_schema import RecipeCreateScheme, RecipeFilterSchema
 
@@ -83,8 +85,12 @@ class RecipeService:
         if filters is None:
             return Recipe.all().count()
 
-        query = Recipe.all()
-        query = query.filter(user_id=user_id)
+        query = Q(user_id=user_id)
+
+        if filters.with_shared:
+            query = query | Q(recipe_users__user_id=user_id)
+
+        query = Recipe.filter(query)
 
         if filters.title:
             query = query.filter(title__icontains=filters.title)
@@ -97,4 +103,4 @@ class RecipeService:
                 schedule_at__gte=filters.start_date,
                 schedule_at__lte=filters.end_date
             )
-        return query
+        return query.distinct()
