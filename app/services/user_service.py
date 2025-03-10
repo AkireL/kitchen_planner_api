@@ -1,4 +1,5 @@
 from fastapi import HTTPException
+from tortoise.expressions import Q
 
 from app.models import RecipeUser, User
 from app.schemas.recipe_schema import RecipeFilterSchema
@@ -35,6 +36,20 @@ class UserService:
             hashed_password=hash,
         )
         return user
+
+    async def retrieve_users_to_shared_recipes(self, value: str):
+        query =  User.filter(Q(username__icontains=value) | Q(email__icontains=value))
+        
+        query = query.exclude(id=self.user.id)
+        
+        query = query.values(
+            "id",
+            "username",
+            "email",
+            "fullname"
+        )
+
+        return await query
 
     async def shared_its_recipes(self, user_id: int, start_date, end_date):
         user_to_share_recipes = await UserService.get_user(user_id)
