@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
 
 from app.models import User
@@ -15,27 +15,16 @@ recipe_router = APIRouter(prefix="/recipes", dependencies=[Depends(AuthService.g
 async def filter_recipes(
     user: Annotated[User, Depends(AuthService.get_current_user)],
     filters: RecipeFilterSchema=Depends(),
-    page: int = Query(1, ge=1, description="Number page"),
-    per_page: int = Query(10, ge=1, le=100, description="Items per page"),
 ):
-    offset = (page - 1) * per_page
-
     recipes = await RecipeService.filter_recipes(
-        user.id,
-        filters,
-        offset,
-        per_page,
-    )
-
-    total_recipes = await RecipeService.get_count_recipes_to_filter(
         user.id,
         filters
     )
 
     if not recipes:
-        return RecipeResource.collection([], page, per_page, total_recipes)
+        return RecipeResource.collection([])
 
-    return RecipeResource.collection(recipes, page, per_page, total_recipes)
+    return RecipeResource.collection(recipes)
 
 @recipe_router.post('')
 async def create_recipe(

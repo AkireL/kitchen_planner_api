@@ -16,18 +16,14 @@ class RecipeResource:
             "preparation": recipe.preparation,
             "duration": recipe.duration,
             "schedule_at": recipe.schedule_at.isoformat(),
-            "user_id": recipe.user.id,
+            "user_id": recipe.user_id,
         }
 
     @staticmethod
     def collection(
         recipes: list,
-        page: int,
-        per_page: int,
-        total: int,
         status_code: int = 200
     ) -> JSONResponse:
-        total_pages = (total + per_page - 1) // per_page
 
         data = []
 
@@ -37,12 +33,6 @@ class RecipeResource:
         return JSONResponse(
             content={
                 "data": data,
-                "meta": {
-                    "page": page,
-                    "per_page": per_page,
-                    "total": total,
-                    "total_pages": total_pages,
-                },
             },
             status_code=status_code
         )
