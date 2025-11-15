@@ -1,6 +1,7 @@
 import sentry_sdk
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
 
 from app.config.app import ORIGINS, SENTRY_DSN
@@ -48,6 +49,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/live")
+async def is_live():
+    return JSONResponse(content={"data": "API working fine"})
 
 
 @app.on_event("startup")

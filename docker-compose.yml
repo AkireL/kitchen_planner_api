@@ -13,7 +13,7 @@ services:
       - db
 
   db:
-    image: mysql:8
+    image: docker.io/mysql:8
     container_name: mysql_container
     restart: always
     ports:

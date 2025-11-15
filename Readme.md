@@ -30,7 +30,7 @@ Kitchen Planner is a powerful and efficient API designed to simplify meal planni
 2. Configure environment variables in a `.env` file.
 3. Build and run the Docker container:
    ```bash
-   docker-compose up --build
+   docker compose up --build
    ```
 
 ### Deployment on AWS
