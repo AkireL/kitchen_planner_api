@@ -8,7 +8,6 @@ from app.services.recipe_service import RecipeService
 
 
 class UserService:
-
     user: User
 
     def __init__(self, user: User):
@@ -17,11 +16,10 @@ class UserService:
     @staticmethod
     async def list_user():
         return await User.filter()
-    
+
     @staticmethod
     async def get_user(id):
         return await User.filter(id=id).first()
-
 
     @staticmethod
     async def get_user_by_username(username: str):
@@ -38,16 +36,11 @@ class UserService:
         return user
 
     async def retrieve_users_to_shared_recipes(self, value: str):
-        query =  User.filter(Q(username__icontains=value) | Q(email__icontains=value))
-        
+        query = User.filter(Q(username__icontains=value) | Q(email__icontains=value))
+
         query = query.exclude(id=self.user.id)
-        
-        query = query.values(
-            "id",
-            "username",
-            "email",
-            "fullname"
-        )
+
+        query = query.values("id", "username", "email", "fullname")
 
         return await query
 
@@ -55,21 +48,19 @@ class UserService:
         user_to_share_recipes = await UserService.get_user(user_id)
 
         if not user_to_share_recipes:
-            raise HTTPException(
-                status_code=404,
-                detail="User does not found.")
+            raise HTTPException(status_code=404, detail="User does not found.")
 
         recipes = await RecipeService.filter_recipes(
-            self.user.id, 
+            self.user.id,
             RecipeFilterSchema(
-                start_date = start_date,
-                end_date = end_date,
-            )
+                start_date=start_date,
+                end_date=end_date,
+            ),
         )
 
         if recipes:
             user_recipes = [
-                RecipeUser(user_id=user_to_share_recipes.id, recipe_id=recipe.id) 
+                RecipeUser(user_id=user_to_share_recipes.id, recipe_id=recipe.id)
                 for recipe in recipes
             ]
 

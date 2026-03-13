@@ -1,4 +1,3 @@
-
 from typing import Any
 
 from fastapi.responses import JSONResponse
@@ -20,10 +19,7 @@ class RecipeResource:
         }
 
     @staticmethod
-    def collection(
-        recipes: list,
-        status_code: int = 200
-    ) -> JSONResponse:
+    def collection(recipes: list, status_code: int = 200) -> JSONResponse:
 
         data = []
 
@@ -34,7 +30,7 @@ class RecipeResource:
             content={
                 "data": data,
             },
-            status_code=status_code
+            status_code=status_code,
         )
 
     @staticmethod
@@ -44,5 +40,5 @@ class RecipeResource:
             content={
                 "data": RecipeResource.to_dict(recipe),
             },
-            status_code=status_code
+            status_code=status_code,
         )

@@ -16,5 +16,5 @@ async def search_user(
 ):
     userService = UserService(user)
     users = await userService.retrieve_users_to_shared_recipes(username)
-    
+
     return JSONResponse(content={"data": users})

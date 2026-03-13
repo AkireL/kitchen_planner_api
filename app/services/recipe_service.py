@@ -5,18 +5,13 @@ from app.schemas.recipe_schema import RecipeCreateScheme, RecipeFilterSchema
 
 
 class RecipeService:
-
     @staticmethod
     async def get_recipe(id):
         return await Recipe.filter(id=id).first()
 
     @staticmethod
     async def create_recipe(user_id: str, data: RecipeCreateScheme):
-        recipe = Recipe(
-            title=data.title,
-            schedule_at=data.schedule_at,
-            user_id = user_id
-        )
+        recipe = Recipe(title=data.title, schedule_at=data.schedule_at, user_id=user_id)
 
         if data.ingredients:
             recipe.ingredients = data.ingredients
@@ -60,16 +55,13 @@ class RecipeService:
 
     @staticmethod
     async def filter_recipes(
-        user_id: str,
-        filters: RecipeFilterSchema,
-        offset: int=0,
-        per_page: int=0
+        user_id: str, filters: RecipeFilterSchema, offset: int = 0, per_page: int = 0
     ):
         query = RecipeService.scope_filter(user_id, filters)
-        
+
         if per_page > 0 and offset > 0:
             query = query.limit(per_page).offset(offset)
-        
+
         return await query
 
     @staticmethod
@@ -78,7 +70,6 @@ class RecipeService:
         query = query.count()
 
         return await query
-
 
     @staticmethod
     def scope_filter(user_id: str, filters: RecipeFilterSchema):
@@ -100,7 +91,6 @@ class RecipeService:
             query = query.filter(schedule_at=filters.schedule_at)
         if filters.start_date and filters.end_date:
             query = query.filter(
-                schedule_at__gte=filters.start_date,
-                schedule_at__lte=filters.end_date
+                schedule_at__gte=filters.start_date, schedule_at__lte=filters.end_date
             )
         return query.distinct()

@@ -6,19 +6,15 @@ from tortoise.contrib.fastapi import register_tortoise
 DATABASE_URL = f"mysql://{os.getenv('MYSQL_USER')}:{os.getenv('MYSQL_PASSWORD')}@{os.getenv('MYSQL_HOST')}:{os.getenv('MYSQL_PORT')}/{os.getenv('MYSQL_DATABASE')}"
 
 TORTOISE_ORM = {
-    "connections": {
-        "default": DATABASE_URL
-    },
+    "connections": {"default": DATABASE_URL},
     "apps": {
         "models": {
-            "models": [
-                "app.models",
-                "aerich.models"
-            ],
+            "models": ["app.models", "aerich.models"],
             "default_connection": "default",
         },
     },
 }
+
 
 def init_db(app: FastAPI) -> None:
     register_tortoise(

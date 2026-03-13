@@ -8,14 +8,13 @@ from app.services.auth_service import AuthService
 from app.services.user_service import UserService
 
 shared_recipe_router = APIRouter(
-    prefix="/recipes", 
-    dependencies=[Depends(AuthService.get_current_user)]
+    prefix="/recipes", dependencies=[Depends(AuthService.get_current_user)]
 )
 
-@shared_recipe_router.post('/share')
+
+@shared_recipe_router.post("/share")
 async def shared(
-    user: Annotated[User, Depends(AuthService.get_current_user)],
-    data: SharedRecipesScheme
+    user: Annotated[User, Depends(AuthService.get_current_user)], data: SharedRecipesScheme
 ):
 
     userService = UserService(user)
