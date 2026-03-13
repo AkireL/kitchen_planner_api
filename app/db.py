@@ -11,12 +11,14 @@ TORTOISE_ORM = {
     },
     "apps": {
         "models": {
-            "models": ["app.models", "aerich.models"],
+            "models": [
+                "app.models",
+                "aerich.models"
+            ],
             "default_connection": "default",
         },
     },
 }
-
 
 def init_db(app: FastAPI) -> None:
     register_tortoise(

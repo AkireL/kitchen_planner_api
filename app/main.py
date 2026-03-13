@@ -8,12 +8,13 @@ from app.config.app import ORIGINS, SENTRY_DSN
 from app.db import init_db
 from app.rate_limit import config_rate_limit
 from app.routers.authentication_router import auth_router
+from app.routers.chat_router import chat_router
 from app.routers.recipe_router import recipe_router
 from app.routers.shared_recipes_router import shared_recipe_router
 from app.routers.user_router import user_router
 
 sentry_sdk.init(
-    dsn= SENTRY_DSN,
+    dsn=SENTRY_DSN,
     send_default_pii=False,
     traces_sample_rate=1.0,
     _experiments={
@@ -23,24 +24,25 @@ sentry_sdk.init(
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
+
 def create_application() -> FastAPI:
     application = FastAPI(
         title="Recipes API",
         description="Documentation",
         version="1.0.0",
         contact={
-        "name": "Erika Basurto",
-        "url": "https://www.linkedin.com/in/erika-basurto/",
-        "email": "iamdleonor@gmail.com",
-    },
+            "name": "Erika Basurto",
+            "url": "https://www.linkedin.com/in/erika-basurto/",
+            "email": "iamdleonor@gmail.com",
+        },
     )
     return application
+
 
 app = create_application()
 config_rate_limit(app)
 
 init_db(app)
-
 
 app.add_middleware(
     CORSMiddleware,
@@ -49,6 +51,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 @app.get("/live")
 async def is_live():
@@ -63,3 +66,4 @@ async def startup_event():
     app.include_router(recipe_router)
     app.include_router(user_router)
     app.include_router(shared_recipe_router)
+    app.include_router(chat_router)
