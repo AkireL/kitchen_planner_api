@@ -9,6 +9,7 @@ from app.services.user_service import UserService
 
 user_router = APIRouter(prefix="/users")
 
+
 @user_router.get("")
 async def search_user(
     user: Annotated[User, Depends(AuthService.get_current_user)],

@@ -13,6 +13,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 class ChatRequest(BaseModel):
     message: str
 
+
 @chat_router.post("/chat")
 async def chat(request: ChatRequest):
     respuestas = {

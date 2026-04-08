@@ -12,18 +12,15 @@ class LogInScheme(BaseModel):
     def validate_password_strength(cls, v):
         if not re.search(r"[a-z]", v):
             raise HTTPException(
-                status_code=422,
-                detail="Password must contain at least one lowercase letter."
+                status_code=422, detail="Password must contain at least one lowercase letter."
             )
         if not re.search(r"[A-Z]", v):
             raise HTTPException(
-                status_code=422,
-                detail="Password must contain at least one uppercase letter."
+                status_code=422, detail="Password must contain at least one uppercase letter."
             )
         if not re.search(r"[0-9]", v):
             raise HTTPException(
-                status_code=422,
-                detail="Password must contain at least one number."
+                status_code=422, detail="Password must contain at least one number."
             )
         return v
 
