@@ -11,6 +11,11 @@ tomlkit
 slowapi
 mangum
 sentry-sdk[fastapi]
-
+langchain
+langchain-openai
+langchain-openrouter
+langgraph-checkpoint-postgres
+psycopg[binary]
+langgraph-cli[inmem]
 
 ruff
