@@ -1,10 +1,9 @@
-import os
 from dataclasses import dataclass
 
 from langchain.agents import create_agent
-from langchain.agents.middleware import SummarizationMiddleware
+from langchain_core.messages import AIMessage
 from langchain_openrouter import ChatOpenRouter
-from langgraph.checkpoint.postgres import PostgresSaver
+from langgraph.graph import MessagesState
 
 from app.services.agent.nodes.chef.prompt import prompt
 from app.services.agent.nodes.chef.tools import tools
@@ -14,43 +13,44 @@ from app.services.agent.nodes.chef.tools import tools
 class Context:
     """Custom runtime context schema."""
 
-    user_id: str
+    user_id: int
+    thread_id: int
 
 
 model = ChatOpenRouter(
-    # model="openai/gpt-4o-mini",
     model="openai/gpt-oss-20b",
     temperature=0.5,
 )
 
-db_url = (
-    f"postgresql://{os.getenv('POSTGRES_USER')}:"
-    f"{os.getenv('POSTGRES_PASSWORD')}@"
-    f"{os.getenv('POSTGRES_HOST')}:"
-    f"{os.getenv('POSTGRES_PORT')}/"
-    f"{os.getenv('POSTGRES_DB')}?sslmode=disable"
-)
+
+class State(MessagesState):
+    user_id: int
+    chat_id: int
 
 
-with PostgresSaver.from_conn_string(str(db_url)) as checkpointer:
-    # checkpointer.setup()
+def node(state: State):
+    history = state["messages"]
+    thread_id = state.get("thread_id")
+    id = state.get("user_id")
+
+    last_user_message = history[-1].content
 
     agent = create_agent(
         model=model,
         tools=tools,
         system_prompt=prompt,
-        middleware=[
-            SummarizationMiddleware(model=model, trigger=("tokens", 4000), keep=("messages", 20))
-        ],
-        checkpointer=checkpointer,
     )
 
-    config = {"configurable": {"thread_id": "1"}}
+    config = {"configurable": {"thread_id": thread_id}}
+
+    # Falta mandarle todo el contexto, no solo el último mensaje
 
     response = agent.invoke(
-        {"messages": [{"role": "user", "content": "dame el clima"}]},
+        {"messages": [{"role": "user", "content": last_user_message}]},
         config,
-        context=Context(user_id="1"),
+        context=Context(user_id=id, thread_id=thread_id),
     )
 
-    print(response["messages"][-1].content)
+    ai_response = response["messages"][-1].content
+
+    return {"messages": [AIMessage(content=ai_response)]}

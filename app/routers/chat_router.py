@@ -3,11 +3,19 @@ import asyncio
 from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 from fastapi.security import OAuth2PasswordBearer
+from langchain_core.messages import HumanMessage
 from pydantic import BaseModel
+
+from app.db_agent import CheckpointerDep
+from app.services.agent.agent import make_graph
 
 chat_router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+
+class Message(BaseModel):
+    message: str
 
 
 class ChatRequest(BaseModel):
@@ -33,3 +41,22 @@ async def chat(request: ChatRequest):
         yield "data: [DONE]\n\n"
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
+
+
+@chat_router.post("/chat/{chat_id}/stream")
+async def stream_chat(chat_id: int, message: Message, checkpointer: CheckpointerDep):
+
+    def generate_response():
+        human_message = HumanMessage(content=message.message)
+        agent = make_graph(config={"checkpointer": checkpointer})
+        for message_chunk, _ in agent.stream(
+            {"messages": [human_message], "user_id": 1, "chat_id": chat_id},
+            stream_mode="messages",
+            config={"configurable": {"thread_id": 1}},
+        ):
+            if message_chunk.content:
+                yield f"data: {message_chunk.content}\n\n"
+
+        print(message_chunk.content, end="|", flush=True)
+
+    return StreamingResponse(generate_response(), media_type="text/event-stream")

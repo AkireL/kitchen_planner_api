@@ -1,0 +1,7 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "chef": "./app/services/agent/nodes/chef/node.py:node"
+  },
+  "env": ".env"
+}
