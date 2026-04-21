@@ -45,18 +45,25 @@ async def chat(request: ChatRequest):
 
 @chat_router.post("/chat/{chat_id}/stream")
 async def stream_chat(chat_id: int, message: Message, checkpointer: CheckpointerDep):
+    human_message = HumanMessage(content=message.message)
+    agent = make_graph(config={"checkpointer": checkpointer})
 
     def generate_response():
-        human_message = HumanMessage(content=message.message)
-        agent = make_graph(config={"checkpointer": checkpointer})
-        for message_chunk, _ in agent.stream(
+        for chunk in agent.stream(
             {"messages": [human_message], "user_id": 1, "chat_id": chat_id},
             stream_mode="messages",
-            config={"configurable": {"thread_id": 1}},
+            config={"configurable": {"thread_id": chat_id}},
         ):
-            if message_chunk.content:
-                yield f"data: {message_chunk.content}\n\n"
+            node, _ = chunk
+            yield f"data: {node.content}\n\n"
 
-        print(message_chunk.content, end="|", flush=True)
+        yield "data: [DONE]\n\n"
 
-    return StreamingResponse(generate_response(), media_type="text/event-stream")
+    return StreamingResponse(
+        generate_response(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+        },
+    )

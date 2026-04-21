@@ -17,5 +17,6 @@ langchain-openrouter
 langgraph-checkpoint-postgres
 psycopg[binary]
 langgraph-cli[inmem]
+langmem
 
 ruff
