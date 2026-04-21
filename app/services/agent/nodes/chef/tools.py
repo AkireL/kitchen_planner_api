@@ -35,7 +35,7 @@ def get_weather(city: str) -> str:
 def store_recipe(data: list[Recipe]) -> str:
     """Store a recipe in the database."""
     print("Storing recipe:")
-    print(data.json())
+    print(str(data))
     return "Receta guardada exitosamente!"
 
 
