@@ -74,7 +74,7 @@ Preparación:
 2. Paso 2
 3. Paso 3
 Video tutorial (YouTube):
-<enlace>
+[Ver video](https://www.youtube.com/...)
 REGLAS FINALES
 - Sé claro, directo y práctico
 - NO expliques decisiones
