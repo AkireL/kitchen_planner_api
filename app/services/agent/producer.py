@@ -1,8 +1,6 @@
 import logging
-import queue
-import threading
 import time
-from collections.abc import Iterator
+from collections.abc import AsyncIterator
 from typing import Any
 
 from langchain_core.messages import HumanMessage
@@ -21,36 +19,28 @@ class ChatStreamProducer:
         self.timeout_policy = timeout_policy
         self.agent_provider = agent_provider
 
-    def produce(
+    async def produce(
         self, checkpointer, chat_id: int, human_message: HumanMessage
-    ) -> Iterator[tuple[str, Any]]:
-        events: queue.Queue = queue.Queue()
+    ) -> AsyncIterator[tuple[str, Any]]:
         agent = self.agent_provider.build(checkpointer)
-
-        def worker() -> None:
-            try:
-                for chunk in agent.stream(
-                    {"messages": [human_message], "user_id": self.user.id, "chat_id": chat_id},
-                    stream_mode="messages",
-                    config={"configurable": {"thread_id": chat_id}},
-                ):
-                    events.put(("chunk", chunk))
-
-                events.put(("done", None))
-            except Exception:
-                logger.exception("Chat stream worker failed", extra={"chat_id": chat_id})
-                events.put(("error", None))
-
-        threading.Thread(target=worker, daemon=True).start()
 
         last_event_at = time.monotonic()
 
-        while True:
-            try:
-                kind, payload = events.get(timeout=1)
+        try:
+            async for chunk in agent.astream(
+                {"messages": [human_message], "user_id": self.user.id, "chat_id": chat_id},
+                stream_mode="messages",
+                config={"configurable": {"thread_id": chat_id}},
+            ):
                 last_event_at = time.monotonic()
-                yield kind, payload
-            except queue.Empty:
-                if self.timeout_policy.has_timed_out(last_event_at):
-                    yield "timeout", None
-                    return
+                yield "chunk", chunk
+        except Exception:
+            logger.exception("Chat stream failed", extra={"chat_id": chat_id})
+            yield "error", None
+            return
+
+        if self.timeout_policy.has_timed_out(last_event_at):
+            yield "timeout", None
+            return
+
+        yield "done", None

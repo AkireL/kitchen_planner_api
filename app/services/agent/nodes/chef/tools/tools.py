@@ -1,10 +1,10 @@
-from datetime import date
+from dataclasses import dataclass
+from datetime import date, datetime
 
 from langchain.tools import ToolRuntime, tool
 from pydantic import BaseModel, Field
 
 from app.services.agent.nodes.chef.services.recipe_store_adapter import RecipeStoreAdapter
-from app.services.agent.state import State
 
 
 class Recipe(BaseModel):
@@ -16,13 +16,26 @@ class Recipe(BaseModel):
     duration: str = Field(max_length=50, description="Estimated cooking time")
     schedule_at: date = Field(description="Date to schedule the recipe")
 
+
+@dataclass
+class Context:
+    """Custom runtime context schema."""
+
+    user_id: int
+    thread_id: int
+
 @tool("store_recipe", description="store a recipe list when user wants to save it")
-async def store_recipe(data: list[Recipe], runtime: ToolRuntime[None, State]) -> str:
+async def store_recipe(data: list[Recipe], runtime: ToolRuntime[None, Context]) -> str:
     """Store a recipe in the database."""
     adapter = RecipeStoreAdapter()
-    user_id = runtime.state.user_id
+    user_id = runtime.context.user_id
 
     return await adapter.store(user_id, data)
 
 
-tools = [store_recipe]
+@tool("get_date", description="Sirve para saber la fecha")
+def get_date() -> str:
+    """Return today's date"""
+    return datetime.today().isoformat()
+
+tools = [store_recipe, get_date]

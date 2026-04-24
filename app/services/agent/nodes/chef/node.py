@@ -29,13 +29,12 @@ agent = create_agent(
 )
 
 
-def node(state: State):
+async def node(state: State):
     new_state: State = {}
     thread_id = state.get("thread_id")
     id = state.get("user_id")
 
-    response = agent.invoke(
-        # {"messages": [{"role": "user", "content": last_user_message}]},
+    response = await agent.ainvoke(
         {"messages": state.get("messages")},
         context=Context(user_id=id, thread_id=thread_id),
     )

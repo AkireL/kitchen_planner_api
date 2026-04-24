@@ -1,5 +1,5 @@
 import logging
-from collections.abc import Iterator
+from collections.abc import AsyncIterator
 
 from fastapi import HTTPException
 from langchain_core.messages import HumanMessage
@@ -20,17 +20,20 @@ class ChatStreamService:
         self.producer = producer
         self.formatter = formatter
 
-    def stream(self, chat_id: int, message_text: str, checkpointer) -> Iterator[str]:
+    def stream(self, chat_id: int, message_text: str, checkpointer) -> AsyncIterator[str]:
         self._validate_stream_input(message_text, checkpointer)
 
         human_message = HumanMessage(content=message_text)
         logger.info("Starting chat stream", extra={"chat_id": chat_id, "user": self.user.id})
 
-        def generate_response():
+        async def generate_response():
             sequence = 0
 
             try:
-                for kind, payload in self.producer.produce(checkpointer, chat_id, human_message):
+                async for kind, payload in self.producer.produce(
+                    checkpointer,
+                    chat_id,
+                    human_message):
                     if kind == "chunk":
                         node = payload[0] if isinstance(payload, tuple) else payload
                         content = getattr(node, "content", None)
