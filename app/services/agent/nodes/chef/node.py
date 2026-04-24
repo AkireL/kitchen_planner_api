@@ -5,7 +5,7 @@ from langchain_core.messages import AIMessage
 from langchain_openrouter import ChatOpenRouter
 
 from app.services.agent.nodes.chef.prompt import prompt
-from app.services.agent.nodes.chef.tools import tools
+from app.services.agent.nodes.chef.tools.tools import tools
 from app.services.agent.state import State
 
 

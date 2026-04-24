@@ -6,7 +6,6 @@ import psycopg
 from fastapi import Depends, FastAPI
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 
-from app.db import init_db
 from app.routers.authentication_router import auth_router
 from app.routers.recipe_router import recipe_router
 from app.routers.shared_recipes_router import shared_recipe_router
@@ -25,7 +24,6 @@ _checkpointer: AsyncPostgresSaver | None = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    init_db(app)
     global _checkpointer
     conn = await psycopg.AsyncConnection.connect(DB_URI)
     await conn.set_autocommit(True)

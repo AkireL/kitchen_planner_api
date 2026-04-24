@@ -14,7 +14,10 @@ logger = logging.getLogger(__name__)
 
 
 class ChatStreamProducer:
-    def __init__(self, agent_provider: ChatAgentProvider, timeout_policy: StreamTimeoutPolicy):
+    def __init__(self, user, 
+                agent_provider: ChatAgentProvider,
+                timeout_policy: StreamTimeoutPolicy):
+        self.user = user
         self.timeout_policy = timeout_policy
         self.agent_provider = agent_provider
 
@@ -27,7 +30,7 @@ class ChatStreamProducer:
         def worker() -> None:
             try:
                 for chunk in agent.stream(
-                    {"messages": [human_message], "user_id": 1, "chat_id": chat_id},
+                    {"messages": [human_message], "user_id": self.user.id, "chat_id": chat_id},
                     stream_mode="messages",
                     config={"configurable": {"thread_id": chat_id}},
                 ):

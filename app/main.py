@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
 
 from app.config.app import ORIGINS, SENTRY_DSN
+from app.db import init_db
 from app.db_agent import lifespan
 from app.rate_limit import config_rate_limit
 
@@ -34,9 +35,10 @@ def create_application() -> FastAPI:
     )
     return application
 
-
 app = create_application()
 config_rate_limit(app)
+init_db(app)
+
 
 app.add_middleware(
     CORSMiddleware,

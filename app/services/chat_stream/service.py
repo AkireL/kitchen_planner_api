@@ -9,13 +9,14 @@ from app.services.chat_stream.producer import ChatStreamProducer
 
 logger = logging.getLogger(__name__)
 
-
 class ChatStreamService:
     def __init__(
         self,
+        user,
         producer: ChatStreamProducer,
         formatter: ChatEventFormatter,
     ):
+        self.user = user
         self.producer = producer
         self.formatter = formatter
 
@@ -23,7 +24,7 @@ class ChatStreamService:
         self._validate_stream_input(message_text, checkpointer)
 
         human_message = HumanMessage(content=message_text)
-        logger.info("Starting chat stream", extra={"chat_id": chat_id})
+        logger.info("Starting chat stream", extra={"chat_id": chat_id, "user": self.user.id})
 
         def generate_response():
             sequence = 0
