@@ -1,4 +1,4 @@
-from app.services.agent.agent import make_graph
+from app.services.agent.graph import make_graph
 
 
 class ChatAgentProvider:
