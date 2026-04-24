@@ -6,12 +6,12 @@ from pydantic import BaseModel
 
 from app.db_agent import CheckpointerDep
 from app.models import User
+from app.services.agent.agent_provider import ChatAgentProvider
+from app.services.agent.chat_stream_service import ChatStreamService
+from app.services.agent.event_formatter import ChatEventFormatter
+from app.services.agent.producer import ChatStreamProducer
+from app.services.agent.timeout_policy import StreamTimeoutPolicy
 from app.services.auth_service import AuthService
-from app.services.chat_stream.agent_provider import ChatAgentProvider
-from app.services.chat_stream.event_formatter import ChatEventFormatter
-from app.services.chat_stream.producer import ChatStreamProducer
-from app.services.chat_stream.service import ChatStreamService
-from app.services.chat_stream.timeout_policy import StreamTimeoutPolicy
 
 chat_router = APIRouter(dependencies=[Depends(AuthService.get_current_user)])
 

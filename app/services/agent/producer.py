@@ -7,8 +7,8 @@ from typing import Any
 
 from langchain_core.messages import HumanMessage
 
-from app.services.chat_stream.agent_provider import ChatAgentProvider
-from app.services.chat_stream.timeout_policy import StreamTimeoutPolicy
+from app.services.agent.agent_provider import ChatAgentProvider
+from app.services.agent.timeout_policy import StreamTimeoutPolicy
 
 logger = logging.getLogger(__name__)
 

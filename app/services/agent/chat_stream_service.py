@@ -4,8 +4,8 @@ from collections.abc import Iterator
 from fastapi import HTTPException
 from langchain_core.messages import HumanMessage
 
-from app.services.chat_stream.event_formatter import ChatEventFormatter
-from app.services.chat_stream.producer import ChatStreamProducer
+from app.services.agent.event_formatter import ChatEventFormatter
+from app.services.agent.producer import ChatStreamProducer
 
 logger = logging.getLogger(__name__)
 
