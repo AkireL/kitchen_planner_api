@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime
 
 from app.schemas.recipe_schema import RecipeCreateScheme
 from app.services.recipe_service import RecipeService
@@ -28,11 +29,19 @@ class RecipeStoreAdapter:
         return "Receta guardada exitosamente!"
 
     async def _store(self, user_id: int, recipe) -> None:
+        schedule_at = recipe.schedule_at
+        
+        if schedule_at is None:
+            schedule_at = datetime.now()
+        else:
+            current_year = datetime.now().year
+            schedule_at = schedule_at.replace(year=current_year)
+
         data = RecipeCreateScheme(
             title=recipe.title,
             ingredients=recipe.ingredients,
             preparation=recipe.preparation,
             duration=recipe.duration,
-            schedule_at=recipe.schedule_at,
+            schedule_at=schedule_at,
         )
         await RecipeService.create_recipe(user_id, data)
