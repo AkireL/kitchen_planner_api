@@ -16,10 +16,10 @@ TORTOISE_ORM = {
 }
 
 
-def init_db(app: FastAPI) -> None:
+def init_db(app: FastAPI, db_url: str = DATABASE_URL) -> None:  # ← acepta db_url
     register_tortoise(
         app,
-        db_url=DATABASE_URL,
+        db_url=db_url,
         modules={"models": ["app.models"]},
         generate_schemas=False,
         add_exception_handlers=True,

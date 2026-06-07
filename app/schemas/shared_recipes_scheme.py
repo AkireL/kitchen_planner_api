@@ -1,6 +1,6 @@
 from datetime import date
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class SharedRecipesScheme(BaseModel):
@@ -8,7 +8,7 @@ class SharedRecipesScheme(BaseModel):
     start_date: date
     end_date: date
 
-    @validator("end_date")
+    @field_validator("end_date")
     def check_end_date(cls, v, values):
         start_date = values.get("start_date")
         if start_date and v <= start_date:

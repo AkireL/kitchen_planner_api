@@ -1,14 +1,14 @@
 import re
 
 from fastapi import HTTPException
-from pydantic import BaseModel, EmailStr, Field, validator
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 
 class LogInScheme(BaseModel):
     password: str = Field(min_length=8)
     username: str = Field(min_length=4)
 
-    @validator("password")
+    @field_validator("password")
     def validate_password_strength(cls, v):
         if not re.search(r"[a-z]", v):
             raise HTTPException(
