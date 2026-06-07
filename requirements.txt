@@ -20,3 +20,8 @@ langgraph-cli[inmem]
 langmem
 
 ruff
+
+pytest
+pytest-asyncio
+pytest-cov
+httpx
